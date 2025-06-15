@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maapin Yah...</title>
+    <style>
+      /* ... [TIDAK ADA PERUBAHAN DI CSS, SAMA SEPERTI SEBELUMNYA] ... */
+      :root {
+        font-size: 16px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: rgb(3, 3, 3);
+        height: 100vh;
+        height: 100dvh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, Helvetica, sans-serif;
+        position: relative;
+      }
+
+      .light {
+        max-width: 420px;
+        width: 80%;
+        position: fixed;
+        height: 85vh;
+        height: 85dvh;
+        top: 0;
+        background: linear-gradient(
+          to bottom,
+          rgb(255, 255, 255, 0.75),
+          rgb(0, 0, 0, 0)
+        );
+        z-index: 99999;
+        clip-path: polygon(40% 0, 60% 0, 100% 100%, 0% 100%);
+      }
+
+      .container {
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-self: center;
+        justify-content: center;
+      }
+
+      .nama {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, 75%);
+        font-size: 1.5rem;
+        color: white;
+        background: black;
+        padding: 0.5rem 3rem;
+        font-weight: bold;
+        border: 0.25rem solid white;
+        border-radius: 1rem;
+        z-index: 99999;
+        font-family: sans-serif;
+      }
+
+      .nama .arrow {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -100%);
+        border: 0.75rem solid transparent;
+        border-bottom-color: white;
+      }
+
+      .nama:hover {
+        background: white;
+        color: black;
+      }
+
+      .dialog {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -30%);
+        color: white;
+        max-width: 100%;
+        width: 24rem;
+        background: rgba(0, 0, 0, 0.74);
+        border: 0.25rem solid white;
+        padding: 0 1rem;
+        padding-bottom: 1rem;
+        border-radius: 1rem;
+        z-index: 999999;
+      }
+
+      .dialog legend {
+        background: black;
+        padding: 0.5rem;
+        font-weight: bold;
+        font-size: 1.25rem;
+        border-radius: 1rem;
+      }
+
+      .button-container {
+        display: flex;
+        width: 100%;
+        justify-content: space-around;
+        margin-top: 1rem;
+        gap: 0.75rem;
+      }
+
+      button {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        background: black;
+        color: white;
+        border: 0.25rem solid white;
+        border-radius: 0.5rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: left 0.3s ease-in-out, top 0.3s ease-in-out,
+          position 0.3s ease-in-out;
+      }
+
+      .ya {
+        background: rgba(66, 255, 66, 0.301);
+      }
+
+      .ga {
+        background: rgba(255, 66, 66, 0.301);
+      }
+
+      button:hover {
+        background: white;
+        color: black;
+      }
+
+      .assets {
+        display: none;
+      }
+
+      .loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999999;
+      }
+
+      progress {
+        height: 2rem;
+        width: 50%;
+      }
+
+      .fireworks {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -999;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/TextPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.x/dist/index.umd.js"></script>
+  </head>
+
+  <body>
+    <!-- Tambahkan audio -->
+    <audio id="bgAudio" src="lagu.mp3" preload="auto"></audio>
+
+    <div class="loader">
+      <progress></progress>
+    </div>
+    <div class="assets">
+      <img src="me.gif" alt="" />
+      <img src="tanya.gif" alt="" />
+      <img src="nangis.gif" alt="" />
+      <img src="hore.gif" alt="" />
+    </div>
+    <div class="fireworks"></div>
+    <div class="light"></div>
+    <div class="container">
+      <img
+        src="me.gif"
+        alt="Gif"
+        style="width: 20rem; margin-top: 4rem"
+        id="cimol"
+      />
+      <fieldset class="dialog">
+        <legend>Maapin Yah..</legend>
+        <p id="quote">Aku sedang sibuk. jadi aku akan unistall Discord</p>
+        <div class="button-container">
+          <button class="ya">Baiklaa</button>
+          <button class="ga">Gamau</button>
+        </div>
+      </fieldset>
+      <a class="nama" href="https://instagram.com/alfrdz.ha">
+        <div class="arrow"></div>
+        Aku
+      </a>
+    </div>
+
+    <script>
+      gsap.registerPlugin(TextPlugin);
+      const assets = document.querySelector(".assets").querySelectorAll("img");
+      const progress = document.querySelector("progress");
+      progress.max = assets.length;
+      let loaded = 0;
+      assets.forEach((asset) => {
+        asset.onload = () => {
+          loaded++;
+          progress.value = loaded;
+          if (loaded === assets.length) {
+            gsap.to(".loader", { autoAlpha: 0, duration: 0.75 });
+            gsap.fromTo(
+              "#cimol",
+              { scale: 0 },
+              { scale: 1, duration: 2, ease: "power2.out" }
+            );
+            gsap.fromTo(
+              ".light",
+              { autoAlpha: 0 },
+              { autoAlpha: 1, duration: 2, delay: 1, ease: "power2.out" }
+            );
+            gsap.fromTo(
+              ".nama",
+              { autoAlpha: 0, y: "500%" },
+              {
+                y: "50%",
+                autoAlpha: 1,
+                duration: 0.5,
+                ease: "power.inOut",
+                delay: 1.75,
+              }
+            );
+            gsap.fromTo(
+              ".dialog",
+              { y: "-200%", scale: 0 },
+              { scale: 1, y: "-40%", duration: 1, ease: "power.in", delay: 2.5 }
+            );
+          }
+        };
+        if (asset.complete) asset.onload();
+      });
+
+      let click = 0;
+      const kataKata = [
+        "Aku mau Unistall ya",
+        "Aku mau uninstall Discord, .",
+        "Aku mau uninstall Discord, . .",
+        "Aku mau uninstall Discord, . . .",
+        "Aku mau uninstall Discord, . . . .",
+        "Aku mau uninstall Discord, . . . . .",
+      ];
+      function getKata() {
+        return kataKata[Math.floor(Math.random() * kataKata.length)];
+      }
+
+      const btn = document.querySelector(".ga");
+      const quote = document.getElementById("quote");
+      document.querySelector(".ya").addEventListener("click", (e) => {
+        e.preventDefault();
+
+        // Putar audio saat tombol "Baiklaa" diklik
+        const audio = document.getElementById("bgAudio");
+        audio.play();
+
+        gsap.to(".dialog", {
+          scale: 0,
+          y: "200%",
+          duration: 0.5,
+          ease: "power.out",
+        });
+        gsap.to(".light", { autoAlpha: 0, duration: 2.5, ease: "power.out" });
+        gsap.to("body", {
+          background: "white",
+          duration: 5,
+          ease: "power.out",
+        });
+        gsap.to(".nama", {
+          background: "white",
+          color: "black",
+          borderColor: "black",
+          duration: 5,
+          ease: "power.out",
+        });
+        gsap.to(".arrow", {
+          borderBottomColor: "black",
+          duration: 5,
+          ease: "power.out",
+        });
+        firework();
+        cimol.src = "hore.gif";
+      });
+
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const text = getKata();
+        gsap.fromTo(quote, { text: "" }, { duration: 2, text, ease: "power" });
+        if (click > 6) click = 0;
+        else if (click > 5) cimol.src = "nangis.gif";
+        else if (click > 1) cimol.src = "tanya.gif";
+        else cimol.src = "me.gif";
+        click++;
+        const btn = e.target;
+        btn.style.width = "8rem";
+        btn.style.position = "fixed";
+        btn.style.display = "block";
+        const bound = document.querySelector(".ya").getBoundingClientRect();
+        const x =
+          Math.random() * (window.innerWidth - btn.offsetWidth) - bound.left;
+        const y =
+          Math.random() * (window.innerHeight - btn.offsetHeight) - bound.top;
+        btn.style.background = "red";
+        btn.style.left = `${x}px`;
+        btn.style.top = `${y}px`;
+      });
+
+      function firework() {
+        const container = document.querySelector(".fireworks");
+        const fireworks = new Fireworks.default(container);
+        fireworks.start();
+      }
+    </script>
+  </body>
+</html>
